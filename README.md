@@ -15,7 +15,7 @@ pushd ./prometheus-operator; git pull -a; git co ${PROMETHEUS_OPERATOR_VERSION:?
 cat ./prometheus-operator/example/prometheus-operator-crd/*.yaml > ${NEW_MERGED_CRD_FILE:?}
 MERGED_MINIFIED_CRD_FILE=${NEW_MERGED_CRD_FILE/.yaml/-minified.yaml}
 # see https://github.com/prometheus-community/helm-charts/issues/1500#issuecomment-1065572519 for more details on this
-yq eval 'del(.. | .description?)' ${NEW_MERGED_CRD_FILE:?} > ${MERGED_MINIFIED_CRD_FILE:?}
+yq eval 'del(.. | .description?, .metadata.creationTimestamp? )' ${NEW_MERGED_CRD_FILE:?} > ${MERGED_MINIFIED_CRD_FILE:?}
 git add ${NEW_MERGED_CRD_FILE:?} ${MERGED_MINIFIED_CRD_FILE:?}
 git commit -m "Added prometheus operator CRDs file for ${PROMETHEUS_OPERATOR_VERSION:?}"
 git push
