@@ -11,12 +11,13 @@ Follow these steps to get the file ready.
 PROMETHEUS_OPERATOR_VERSION=  # e.g. v0.44.0
 NEW_MERGED_CRD_FILE=prometheus-operator-crds-${PROMETHEUS_OPERATOR_VERSION:?}.yaml
 test -d prometheus-operator || git clone https://github.com/prometheus-operator/prometheus-operator
-pushd ./prometheus-operator; git pull -a; git co ${PROMETHEUS_OPERATOR_VERSION:?}; popd
+cd ./prometheus-operator; git pull origin ${PROMETHEUS_OPERATOR_VERSION:?}; git checkout ${PROMETHEUS_OPERATOR_VERSION:?}; cd ../
 cat ./prometheus-operator/example/prometheus-operator-crd/*.yaml > ${NEW_MERGED_CRD_FILE:?}
 MERGED_MINIFIED_CRD_FILE=${NEW_MERGED_CRD_FILE/.yaml/-minified.yaml}
 # see https://github.com/prometheus-community/helm-charts/issues/1500#issuecomment-1065572519 for more details on this
 yq eval 'del(.. | .description?, .metadata.creationTimestamp? )' ${NEW_MERGED_CRD_FILE:?} > ${MERGED_MINIFIED_CRD_FILE:?}
+git checkout -b ${NEW_MERGED_CRD_FILE}
 git add ${NEW_MERGED_CRD_FILE:?} ${MERGED_MINIFIED_CRD_FILE:?}
 git commit -m "Added prometheus operator CRDs file for ${PROMETHEUS_OPERATOR_VERSION:?}"
-git push
+git push --set-upstream origin ${NEW_MERGED_CRD_FILE}
 ```
